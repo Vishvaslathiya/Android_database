@@ -55,15 +55,25 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-                // Concatenate all   into a single string
-                String userInfo = "Name: " + name + "\n" +
-                        "Password: " + pass + "\n" +
-                        "Email: " + email + "\n" +
-                        "Gender: " + gen + "\n" +
-                        "User Role: " + userrole + "\n" +
-                        "Insurance: " + insurence;
+                   long i = db.add_UserDetails(name,email,pass,gen,userrole,insurence);
+                if( i > 0){
+                    Toast.makeText(getApplicationContext(), "User Registered", Toast.LENGTH_LONG).show();
 
-                 Toast.makeText(getApplicationContext(), userInfo, Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "User Not Registered", Toast.LENGTH_LONG).show();
+
+                }
+
+                // // Concatenate all   into a single string
+                // String userInfo = "Name: " + name + "\n" +
+                //         "Password: " + pass + "\n" +
+                //         "Email: " + email + "\n" +
+                //         "Gender: " + gen + "\n" +
+                //         "User Role: " + userrole + "\n" +
+                //         "Insurance: " + insurence;
+
+                //  Toast.makeText(getApplicationContext(), userInfo, Toast.LENGTH_LONG).show();
 
 
 
