@@ -1,7 +1,8 @@
-package com.me.wendesday_hospital;
+package com.me.hospital_crud;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,20 +16,54 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     EditText txtpass, txtname, txtemail;
-    Button register;
+    Button register,viewalldata;
     RadioGroup radioGroup;
     RadioButton rbmale, rbfemale;
     Spinner role;
     CheckBox vimo;
+    Button btnmylogin;
 
+    Dbhelper helper;
+    Dbmanager db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        helper = new Dbhelper(this);
+        db = new Dbmanager(this);
+        db.open();
 
         initialize();
         onregister();
+
+        btnmylogin = findViewById(R.id.btnLogin);
+        btnmylogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotologin();
+            }
+        });
+
+
+        viewalldata.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewallmyuser();
+            }
+        });
     }
+
+
+
+    private void  gotologin(){
+        Intent i = new Intent(MainActivity.this, Login.class);
+        startActivity(i);
+    }
+    private void viewallmyuser() {
+        Intent i = new Intent(MainActivity.this, View_all.class);
+        startActivity(i);
+    }
+
 
     private void onregister() {
         register.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-                   long i = db.add_UserDetails(name,email,pass,gen,userrole,insurence);
+                long i = db.add_UserDetails(name,email,pass,gen,userrole,insurence);
                 if( i > 0){
                     Toast.makeText(getApplicationContext(), "User Registered", Toast.LENGTH_LONG).show();
 
@@ -65,20 +100,20 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-                // // Concatenate all   into a single string
-                // String userInfo = "Name: " + name + "\n" +
-                //         "Password: " + pass + "\n" +
-                //         "Email: " + email + "\n" +
-                //         "Gender: " + gen + "\n" +
-                //         "User Role: " + userrole + "\n" +
-                //         "Insurance: " + insurence;
-
-                //  Toast.makeText(getApplicationContext(), userInfo, Toast.LENGTH_LONG).show();
-
-
+                // Concatenate all   into a single string
+//                String userInfo = "Name: " + name + "\n" +
+//                        "Password: " + pass + "\n" +
+//                        "Email: " + email + "\n" +
+//                        "Gender: " + gen + "\n" +
+//                        "User Role: " + userrole + "\n" +
+//                        "Insurance: " + insurence;
+//
+//                Toast.makeText(getApplicationContext(), userInfo, Toast.LENGTH_LONG).show();
 
             }
         });
+
+
 
 
     }
@@ -89,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         txtemail = findViewById(R.id.txtemail);
 
         register = findViewById(R.id.register);
+        viewalldata = findViewById(R.id.btnViewData);
 
         radioGroup = findViewById(R.id.radioGroup);
         rbmale = findViewById(R.id.rbmale);
