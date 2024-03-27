@@ -1,58 +1,69 @@
-public class LoginActivity extends AppCompatActivity {
+package com.me.hospital_crud;
 
-    private EditText emailEditText, passwordEditText;
-    private Button loginButton;
-    private DatabaseHelper dbHelper;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class Login extends AppCompatActivity {
+
+    EditText inpname, inppass;
+    Button btnlogin;
+    Dbmanager db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize views and database helper
-        emailEditText = findViewById(R.id.email_edit_text);
-        passwordEditText = findViewById(R.id.password_edit_text);
-        loginButton = findViewById(R.id.login_button);
-        dbHelper = new DatabaseHelper(this);
+        inpname = findViewById(R.id.inpname);
+        inppass = findViewById(R.id.inppass);
+        btnlogin = findViewById(R.id.btnLogin1);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        db = new Dbmanager(this);
+        db.open();
+
+        btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = emailEditText.getText().toString().trim();
-                String password = passwordEditText.getText().toString().trim();
+                String username = inpname.getText().toString();
+                String password = inppass.getText().toString();
 
-                if (validateInput(email, password)) {
-                    loginUser(email, password);
+                if (validateLogin(username, password)) {
+                    // User exists, navigate to Dashboard
+                    Intent intent = new Intent(Login.this, View_all.class);
+                    startActivity(intent);
+                } else {
+                    // User does not exist, display message
+                    Toast.makeText(Login.this, "Please register first", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private boolean validateInput(String email, String password) {
-        // Implement input validation (e.g., email not empty)
-        // ... (code for validation logic)
-        return true;  // Return true if input is valid
+    private boolean validateLogin(String username, String password) {
+        Cursor cursor = db.viewAllData();
+
+        while (cursor.moveToNext()) {
+            String dbUsername = cursor.getString(cursor.getColumnIndex(Dbhelper.name));
+            String dbPassword = cursor.getString(cursor.getColumnIndex(Dbhelper.password));
+
+            if (dbUsername.equals(username) && dbPassword.equals(password)) {
+                return true; // User exists in the database
+            }
+        }
+
+        return false; // User not found in the database
     }
 
-    private void loginUser(String email, String password) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        String[] columns = {DatabaseHelper.COLUMN_ID}; // Only need ID for successful login check
-        String selection = DatabaseHelper.COLUMN_EMAIL + " = ?" +
-                " AND " + DatabaseHelper.COLUMN_PASSWORD + " = ?";
-        String[] selectionArgs = {email, password};
-
-        Cursor cursor = db.query(DatabaseHelper.TABLE_NAME, columns, selection, selectionArgs, null, null, null);
-
-        if (cursor.getCount() > 0) {
-            // Login successful, redirect to welcome page
-            Intent welcomeIntent = new Intent(LoginActivity.this, WelcomeActivity.class);
-            startActivity(welcomeIntent);
-        } else {
-            // Login failed, display error message
-            Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
-        }
-        cursor.close();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        db.close();
     }
 }
-
