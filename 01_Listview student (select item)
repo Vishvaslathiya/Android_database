@@ -1,0 +1,34 @@
+//Displaying Students on ListView
+ protected void getList(){
+ Cursor c = db.getStudents();
+ String[] from = {helper.studId, helper.studName, helper.studSem, 
+helper.studDiv};
+ int[] to = {R.id.lblId, R.id.lblName, R.id.lblSem, R.id.lblDiv};
+ SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, 
+R.layout.custom_student_list, c, from, to);
+ lvStudent.setEmptyView(findViewById(R.id.empty));
+ adapter.notifyDataSetChanged();
+ lvStudent.setAdapter(adapter);
+ lvStudent.setOnItemClickListener(new 
+AdapterView.OnItemClickListener() {
+ @Override
+ public void onItemClick(AdapterView<?> parent, View view, int 
+position, long id) {
+TextView lblId = view.findViewById(R.id.lblId);
+ TextView lblName = view.findViewById(R.id.lblName);
+ TextView lblSem = view.findViewById(R.id.lblSem);
+ TextView lblDiv = view.findViewById(R.id.lblDiv);
+// Toast.makeText(MainActivity.this, 
+lblId.getText().toString() + lblName.getText().toString() + 
+lblSem.getText().toString() + lblDiv.getText().toString(), 
+Toast.LENGTH_SHORT).show();
+ Intent i = new Intent(getApplicationContext(), 
+StudentForm.class);
+ i.putExtra("id", lblId.getText().toString());
+ i.putExtra("name", lblName.getText().toString());
+ i.putExtra("sem", lblSem.getText().toString());
+ i.putExtra("div", lblDiv.getText().toString());
+ startActivity(i);
+ }
+ });
+ }
