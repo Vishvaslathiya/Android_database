@@ -1,0 +1,45 @@
+
+    public boolean isValidUser(String username, String password) {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+
+        try {
+            db = dbHelper.getReadableDatabase();
+            String[] columns = {Dbhelper.name, Dbhelper.password};
+            String selection = Dbhelper.name + "=? AND " + Dbhelper.password + "=?";
+            String[] selectionArgs = {username, password};
+            cursor = db.query(Dbhelper.tblname, columns, selection, selectionArgs, null, null, null);
+            return cursor.moveToFirst(); // Returns true if the cursor is not empty (user is found)
+        } catch (SQLException e) {
+            Log.e("DbManager", "Error querying database: " + e.getMessage());
+            return false; // Error occurred while querying database
+        } finally {
+            if (cursor != null) cursor.close();
+            if (db != null) db.close();
+        }
+    }
+
+public boolean verifyUser(String email, String password) {
+    SQLiteDatabase db = helper.getReadableDatabase();
+    String[] columns = {Dbhelper.id};
+    String selection = Dbhelper.email + " = ? AND " + Dbhelper.pass + " = ?";
+    String[] selectionArgs = {email, password};
+
+    Cursor cursor = db.query(Dbhelper.tblname, columns, selection, selectionArgs, null, null, null);
+    boolean userExists = (cursor != null && cursor.getCount() > 0);
+    
+    if (cursor != null) {
+        cursor.close(); // Close the cursor to free up resources
+    }
+    
+    return userExists;
+}
+
+
+    public Cursor getPendingLeaveRequests() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        String[] projection = {"ROWID AS _id", "emp_name", "leave_reason", "status"};
+        String selection = "status=?";
+        String[] selectionArgs = {"Pending"};
+        return db.query("leave_requests", projection, selection, selectionArgs, null, null, null);
+    }
